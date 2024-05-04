@@ -1,35 +1,74 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Image, ImageBackground, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import Colors from '../Util/Colors';
 import Row from '../Components/Row';
 import Col from '../Components/Col';
 import Catalog from '../Data/StoryCatalog';
-
+import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
+import { faArrowDown19, faArrowDown91, faArrowDownAZ, faArrowDownZA, faArrowUpAZ, faFilter, faLanguage, faMusic, faSort, faVolumeHigh, faVolumeMute } from '@fortawesome/free-solid-svg-icons';
+import Util from '../Util/Functions';
 
 
 
 const StoriesCatalogScreen = () => {
     const [showConfig, setShowConfig] = useState(false);
+    const [playMusic, setPlayMusic] = useState(true);
 
-    const dummyCat = Catalog
-    shuffle(dummyCat);
+    const [sortedBy, setSortedBy] = useState('def');
+    const [sortedCat, setSortedCat] = useState([]);
+    const [dummyCat, setDummyCat] = useState([]);
 
-    console.log(`Dummy: ${dummyCat}`)
+    useEffect(() => {
+        Util.shuffle(Catalog);
+        setDummyCat(Catalog);
+    }, []);
 
+    useEffect(() => {
+        if (sortedBy == 'def') {
+            console.log('DEF sort')
+            setSortedCat(dummyCat)
+        } else if (sortedBy == 'az') {
+            console.log('AZ sort')
+            let tempArr = dummyCat;
+            console.log('TEMP: ', tempArr)
+            tempArr.sort(sort_by('title', false, (a) => a.toLowerCase()))
+            console.log('Sorted:', tempArr)
+            setSortedCat(tempArr)
+        } else if (sortedBy == 'za') {
+            console.log('ZA sort')
+            let tempArr = dummyCat;
+            tempArr.sort(sort_by('title', true, (a) => a.toLowerCase()))
+            setSortedCat(tempArr)
+        } else if (sortedBy == '19') {
+            console.log('19 sort')
+            let tempArr = dummyCat;
+            tempArr.sort(sort_by('readingTime', false, parseInt))
+            setSortedCat(tempArr)
+        } else if (sortedBy == '91') {
+            console.log('91 sort')
+            let tempArr = dummyCat;
+            tempArr.sort(sort_by('readingTime', true, parseInt))
+            setSortedCat(tempArr)
+        } else {
+            return
+        }
 
-    function shuffle(array) {
-        let currentIndex = array.length;
+    }, [dummyCat, sortedBy]);
 
-        // While there remain elements to shuffle...
-        while (currentIndex != 0) {
+    const sort_by = (field, reverse, primer) => {
 
-            // Pick a remaining element...
-            let randomIndex = Math.floor(Math.random() * currentIndex);
-            currentIndex--;
+        const key = primer ?
+            function (x) {
+                return primer(x[field])
+            } :
+            function (x) {
+                return x[field]
+            };
 
-            // And swap it with the current element.
-            [array[currentIndex], array[randomIndex]] = [
-                array[randomIndex], array[currentIndex]];
+        reverse = !reverse ? 1 : -1;
+
+        return function (a, b) {
+            return a = key(a), b = key(b), reverse * ((a > b) - (b > a));
         }
     }
 
@@ -38,7 +77,7 @@ const StoriesCatalogScreen = () => {
             <Row>
                 <Col styles={{ width: '25%' }}>
                     <Pressable style={styles.button}>
-                        <Text style={styles.buttonText}>Random</Text>
+                        <Text style={styles.buttonText}>Surprise</Text>
                     </Pressable>
                 </Col>
                 <Col styles={{ width: '50%' }}>
@@ -59,33 +98,44 @@ const StoriesCatalogScreen = () => {
                 showConfig && (
                     <View style={styles.configBar}>
                         <Row>
-                            <Col styles={{ width: '33%' }}>
-                                <Pressable>
-                                    <Text>
-                                        Music
-                                    </Text>
+                            <Col styles={{ width: '33%', alignItems: 'center' }}>
+                                <Pressable onPress={() => setPlayMusic(!playMusic)}>
+                                    <FontAwesomeIcon icon={playMusic ? faVolumeHigh : faVolumeMute} color={Colors.titleSecondary} size={20} />
                                 </Pressable>
                             </Col>
-                            <Col styles={{ width: '33%' }}>
-                                <Pressable>
-                                    <Text>
-                                        Language
-                                    </Text>
+                            <Col styles={{ width: '33%', alignItems: 'center' }}>
+                                <Pressable onPress={() => setPlayMusic(!playMusic)}>
+                                    <FontAwesomeIcon icon={faLanguage} color={Colors.titleSecondary} size={20} />
                                 </Pressable>
                             </Col>
-                            <Col styles={{ width: '33%' }}>
-                                <Pressable>
-                                    <Text>
-                                        Sort
-                                    </Text>
-                                </Pressable>
+                            <Col styles={{ width: '33%', alignItems: 'center' }}>
+                                {sortedBy == 'def' && (<Pressable onPress={() => setSortedBy('az')}>
+                                    <FontAwesomeIcon icon={faSort} color={Colors.titleSecondary} size={20} />
+                                </Pressable>)}
+
+                                {sortedBy == 'az' && (<Pressable onPress={() => setSortedBy('za')}>
+                                    <FontAwesomeIcon icon={faArrowDownAZ} color={Colors.titleSecondary} size={20} />
+                                </Pressable>)}
+
+                                {sortedBy == 'za' && (<Pressable onPress={() => setSortedBy('19')}>
+                                    <FontAwesomeIcon icon={faArrowDownZA} color={Colors.titleSecondary} size={20} />
+                                </Pressable>)}
+
+                                {sortedBy == '19' && (<Pressable onPress={() => setSortedBy('91')}>
+                                    <FontAwesomeIcon icon={faArrowDown19} color={Colors.titleSecondary} size={20} />
+                                </Pressable>)}
+
+                                {sortedBy == '91' && (<Pressable onPress={() => setSortedBy('def')}>
+                                    <FontAwesomeIcon icon={faArrowDown91} color={Colors.titleSecondary} size={20} />
+                                </Pressable>)}
+
                             </Col>
                         </Row>
                     </View>
                 )
             }
             <ScrollView >
-                {dummyCat.slice(0, 6).map((story) => (
+                {sortedCat.length > 0 ? (sortedCat.slice(0, 6).map((story) => (
                     <Pressable key={story.id} style={styles.bookCard}>
                         <Row>
                             <Image
@@ -106,7 +156,7 @@ const StoriesCatalogScreen = () => {
                         </Row>
                     </Pressable>
 
-                ))}
+                ))) : null}
             </ScrollView>
         </View>
     );
