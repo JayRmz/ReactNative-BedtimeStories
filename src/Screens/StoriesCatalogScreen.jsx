@@ -9,12 +9,11 @@ import { faArrowDown19, faArrowDown91, faArrowDownAZ, faArrowDownZA, faArrowUpAZ
 import Util from '../Util/Functions';
 import StoryModal from '../Components/StoryModal';
 import CreditsModal from '../Components/CreditsModal';
-
-
+import IconButton from '../Components/IconButton';
+import StoryCard from '../Components/StoryCard';
 
 const StoriesCatalogScreen = () => {
     const [showConfig, setShowConfig] = useState(false);
-    const [playMusic, setPlayMusic] = useState(true);
 
     const [sortedBy, setSortedBy] = useState('def');
     const [sortedCat, setSortedCat] = useState([]);
@@ -116,64 +115,30 @@ const StoriesCatalogScreen = () => {
                 showConfig && (
                     <View style={styles.configBar}>
                         <Row>
-                            <Col styles={{ width: '33%', alignItems: 'center' }}>
-                                <Pressable onPress={() => setPlayMusic(!playMusic)}>
-                                    <FontAwesomeIcon icon={playMusic ? faVolumeHigh : faVolumeMute} color={Colors.titleSecondary} size={20} />
-                                </Pressable>
-                            </Col>
-                            <Col styles={{ width: '33%', alignItems: 'center' }}>
+                            <Col styles={{ width: '50%', alignItems: 'center' }}>
                                 <Pressable onPress={() => setShowCreditsModal(true)}>
                                     <FontAwesomeIcon icon={faFileLines} color={Colors.titleSecondary} size={20} />
                                 </Pressable>
                             </Col>
-                            <Col styles={{ width: '33%', alignItems: 'center' }}>
-                                {sortedBy == 'def' && (<Pressable onPress={() => setSortedBy('az')}>
-                                    <FontAwesomeIcon icon={faSort} color={Colors.titleSecondary} size={20} />
-                                </Pressable>)}
+                            <Col styles={{ width: '50%', alignItems: 'center' }}>
+                                {sortedBy == 'def' && (<IconButton icon={faSort} onPress={() => setSortedBy('az')} />)}
 
-                                {sortedBy == 'az' && (<Pressable onPress={() => setSortedBy('za')}>
-                                    <FontAwesomeIcon icon={faArrowDownAZ} color={Colors.titleSecondary} size={20} />
-                                </Pressable>)}
+                                {sortedBy == 'az' && (<IconButton onPress={() => setSortedBy('za')} icon={faArrowDownAZ} />)}
 
-                                {sortedBy == 'za' && (<Pressable onPress={() => setSortedBy('19')}>
-                                    <FontAwesomeIcon icon={faArrowDownZA} color={Colors.titleSecondary} size={20} />
-                                </Pressable>)}
+                                {sortedBy == 'za' && (<IconButton onPress={() => setSortedBy('19')} icon={faArrowDownZA} />)}
 
-                                {sortedBy == '19' && (<Pressable onPress={() => setSortedBy('91')}>
-                                    <FontAwesomeIcon icon={faArrowDown19} color={Colors.titleSecondary} size={20} />
-                                </Pressable>)}
+                                {sortedBy == '19' && (<IconButton onPress={() => setSortedBy('91')} icon={faArrowDown19} />)}
 
-                                {sortedBy == '91' && (<Pressable onPress={() => setSortedBy('def')}>
-                                    <FontAwesomeIcon icon={faArrowDown91} color={Colors.titleSecondary} size={20} />
-                                </Pressable>)}
-
+                                {sortedBy == '91' && (<IconButton onPress={() => setSortedBy('def')} icon={faArrowDown91} />)}
                             </Col>
                         </Row>
                     </View>
                 )
             }
+
             <ScrollView >
                 {sortedCat.length > 0 ? (sortedCat.slice(0, 6).map((story) => (
-                    <Pressable key={story.id} style={styles.bookCard} onPress={readStory.bind(null, story)}>
-                        <Row>
-                            <Image
-                                style={styles.tinyImage}
-                                source={{
-                                    uri: story.image,
-                                }}
-                            />
-                            <Col styles={{ width: '75%', justifyContent: 'center', alignItems: 'center' }}>
-                                <Text style={styles.bookCardTitle}>
-                                    {story.title}
-                                </Text>
-                                <Text style={styles.bookCardReadingTime}>
-                                    Reading time: {story.readingTime} min
-                                </Text>
-                            </Col>
-
-                        </Row>
-                    </Pressable>
-
+                    <StoryCard story={story} key={story.id} onPress={readStory.bind(null, story)} />
                 ))) : null}
             </ScrollView>
         </View>
@@ -220,34 +185,7 @@ const styles = StyleSheet.create({
         marginBottom: 5
     },
 
-    bookCard: {
-        flexDirection: 'row',
-        margin: 5,
-        borderRadius: 15,
-        backgroundColor: Colors.cardBackground,
-        borderColor: Colors.titlePrimary,
-        borderWidth: 1,
-        width: '95%',
-        alignSelf: 'center'
-    },
-    bookCardTitle: {
-        fontWeight: '900',
-        color: Colors.titlePrimary,
-        textAlign: 'center'
-    },
-    bookCardReadingTime: {
-        padding: 10,
-        margin: 15,
-        color: Colors.titleSecondary,
-        backgroundColor: Colors.background,
-        borderRadius: 20
-    },
-    tinyImage: {
-        width: 100,
-        height: 100,
-        borderRadius: 10,
-        resizeMode: 'stretch'
-    },
+
 });
 
 export default StoriesCatalogScreen;
