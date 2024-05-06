@@ -5,9 +5,10 @@ import Row from '../Components/Row';
 import Col from '../Components/Col';
 import Catalog from '../Data/StoryCatalog';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { faArrowDown19, faArrowDown91, faArrowDownAZ, faArrowDownZA, faArrowUpAZ, faFilter, faLanguage, faMusic, faSort, faVolumeHigh, faVolumeMute } from '@fortawesome/free-solid-svg-icons';
+import { faArrowDown19, faArrowDown91, faArrowDownAZ, faArrowDownZA, faArrowUpAZ, faFile, faFileLines, faFilter, faLanguage, faMusic, faSort, faVolumeHigh, faVolumeMute } from '@fortawesome/free-solid-svg-icons';
 import Util from '../Util/Functions';
 import StoryModal from '../Components/StoryModal';
+import CreditsModal from '../Components/CreditsModal';
 
 
 
@@ -21,6 +22,8 @@ const StoriesCatalogScreen = () => {
 
     const [selectedStory, setSelectedStory] = useState(null);
     const [showStoryModal, setShowStoryModal] = useState(false);
+
+    const [showCreditsModal, setShowCreditsModal] = useState(false);
 
     useEffect(() => {
         Util.shuffle(Catalog);
@@ -87,7 +90,8 @@ const StoriesCatalogScreen = () => {
 
     return (
         <View style={styles.view}>
-            <StoryModal visible={showStoryModal} storyId={selectedStory} onClose={dismissStory} />
+            {showStoryModal && (<StoryModal visible={showStoryModal} storyId={selectedStory} onClose={dismissStory} />)}
+            {showCreditsModal && (<CreditsModal visible={showCreditsModal} onClose={() => setShowCreditsModal(false)} />)}
             <Row>
                 <Col styles={{ width: '25%' }}>
                     <Pressable style={styles.button} onPress={surpriseStory}>
@@ -118,8 +122,8 @@ const StoriesCatalogScreen = () => {
                                 </Pressable>
                             </Col>
                             <Col styles={{ width: '33%', alignItems: 'center' }}>
-                                <Pressable onPress={() => setPlayMusic(!playMusic)}>
-                                    <FontAwesomeIcon icon={faLanguage} color={Colors.titleSecondary} size={20} />
+                                <Pressable onPress={() => setShowCreditsModal(true)}>
+                                    <FontAwesomeIcon icon={faFileLines} color={Colors.titleSecondary} size={20} />
                                 </Pressable>
                             </Col>
                             <Col styles={{ width: '33%', alignItems: 'center' }}>
